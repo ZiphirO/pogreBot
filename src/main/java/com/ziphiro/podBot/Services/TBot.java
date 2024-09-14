@@ -124,6 +124,8 @@ public class TBot extends TelegramLongPollingBot {
             Path userDirPath = Path.of(storagePath + name);
             Files.createDirectory(userDirPath);
             sendMessage(chatId, "nice, you are registered now");
+        } else {
+            sendMessage(chatId, "enjoy pogreb_OK service dude " + name);
         }
     }
     private void sendMessage(long chatId, String text){
