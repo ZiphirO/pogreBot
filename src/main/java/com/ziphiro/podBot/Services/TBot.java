@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -42,6 +43,7 @@ public class TBot extends TelegramLongPollingBot {
 
     @SneakyThrows
     @Override
+    @Async
     public void onUpdateReceived(Update update) {
         String userName = update.getMessage().getFrom().getUserName();
             Path userDirPath = Path.of(storagePath + userName);
