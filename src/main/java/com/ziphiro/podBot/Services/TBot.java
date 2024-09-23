@@ -1,8 +1,8 @@
 package com.ziphiro.podBot.Services;
 
-import com.ziphiro.podBot.DTO.UserDTO;
 import com.ziphiro.podBot.entityes.User;
 import com.ziphiro.podBot.entityes.UserFile;
+import com.ziphiro.podBot.values.StrV;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
 
 @PropertySource("classpath:props.yml")
 public class TBot extends TelegramLongPollingBot {
-    private final String storagePath = "/home/ziphiro/myBotStorage/";
+    //private final String storagePath = "/home/ziphiro/myBotStorage/";
     @Value("${bot-token}")
     private String botToken;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy:HH.mm.ss");
@@ -46,7 +46,7 @@ public class TBot extends TelegramLongPollingBot {
     @Async
     public void onUpdateReceived(Update update) {
         String userName = update.getMessage().getFrom().getUserName();
-            Path userDirPath = Path.of(storagePath + userName);
+            Path userDirPath = Path.of(StrV.STORAGE_DIR + userName);
             long chatId = update.getMessage().getChatId();
         if (update.hasMessage() && update.getMessage().hasText()){
 
@@ -66,7 +66,7 @@ public class TBot extends TelegramLongPollingBot {
                    userService.checkUser(userName)){
                 var docId = update.getMessage().getDocument().getFileId();
                 var docName = LocalDateTime.now().format(formatter) + update.getMessage().getDocument().getFileName();
-                var docPath = storagePath + userName + "/" + docName;
+                var docPath = StrV.STORAGE_DIR + userName + StrV.SLASH + docName;
 
                 fileService.initUserFile(UserFile.builder().fileName(docName).filePath(docPath)
                         .creator(userName).build());
@@ -77,7 +77,7 @@ public class TBot extends TelegramLongPollingBot {
                 var photoName = LocalDateTime.now().format(formatter) +
                         update.getMessage().getPhoto().getLast().getFileUniqueId() + ".jpg";
                 var photoId = update.getMessage().getPhoto().getLast().getFileId();
-                var photoPath = storagePath + userName + "/" + photoName;
+                var photoPath = StrV.STORAGE_DIR + userName + StrV.SLASH + photoName;
 
                 fileService.initUserFile(UserFile.builder().fileName(photoName)
                         .filePath(photoPath).creator(userName).build());
@@ -87,7 +87,7 @@ public class TBot extends TelegramLongPollingBot {
             && userService.checkUser(userName)){
                 var videoName = LocalDateTime.now().format(formatter) + update.getMessage().getVideo().getFileName();
                 var videoId = update.getMessage().getVideo().getFileId();
-                var videoPath = storagePath + userName + "/" + videoName;
+                var videoPath = StrV.STORAGE_DIR + userName + StrV.SLASH + videoName;
 
                 fileService.initUserFile(UserFile.builder().fileName(videoName)
                         .filePath(videoPath).creator(userName).build());
@@ -104,13 +104,9 @@ public class TBot extends TelegramLongPollingBot {
     }
     private void startCommandReceived(long chatId, String name){
         if (userService.checkUser(name)){
-            sendMessage(chatId, "have a nice time " + name);
+            sendMessage(chatId, StrV.HAVE_A_NICE_TIME + name);
         } else  {
-            String request = "Welcome to pogreb_OK, " + name + "!" + "i'm a simple bot for data operations " +
-                    "you are not registered in pogreb_OK, please Enter your 1)email and 2)password" +
-                    " separated by a space for your new account. You can log in to browser version of pogreb_OK " +
-                    "with your email or telegram user name and password";
-            sendMessage(chatId, request);
+            sendMessage(chatId, StrV.WELCOME + name + "!" + StrV.REGISTRATION_INSTRUCTIONS);
         }
     }
     private void registerCommandReceived(String userName, String email, String pass){
@@ -121,11 +117,11 @@ public class TBot extends TelegramLongPollingBot {
         if (!userService.checkUser(name)) {
             String[] userReg = text.split(" ");
             userService.initUser(User.builder().name(name).pass(passwordEncoder.encode(userReg[1])).email(userReg[0]).build());
-            Path userDirPath = Path.of(storagePath + name);
+            Path userDirPath = Path.of(StrV.STORAGE_DIR + name);
             Files.createDirectory(userDirPath);
-            sendMessage(chatId, "nice, you are registered now");
+            sendMessage(chatId, StrV.REGISTERED);
         } else {
-            sendMessage(chatId, "enjoy pogreb_OK service dude " + name);
+            sendMessage(chatId, StrV.ENJOY + name);
         }
     }
     private void sendMessage(long chatId, String text){
@@ -147,15 +143,15 @@ public class TBot extends TelegramLongPollingBot {
         String file_path = path.getString("file_path");
 
         URL downoload = new URL("https://api.telegram.org/file/bot" + botToken
-                + "/" + file_path);
-        FileOutputStream fos = new FileOutputStream(storagePath + userName
-                + "/" + fileName);
-        System.out.println(userName + " Start upload");
+                + StrV.SLASH + file_path);
+        FileOutputStream fos = new FileOutputStream(StrV.STORAGE_DIR + userName
+                + StrV.SLASH + fileName);
+        System.out.println(userName + StrV.START_UPLOAD);
         ReadableByteChannel rbc = Channels.newChannel(downoload.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
-        System.out.println(userName + " upload complete");
+        System.out.println(userName + StrV.UPLOAD_COMPLETE);
     }
 
     }
