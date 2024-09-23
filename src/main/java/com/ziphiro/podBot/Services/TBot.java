@@ -30,10 +30,9 @@ import java.time.format.DateTimeFormatter;
 
 @PropertySource("classpath:props.yml")
 public class TBot extends TelegramLongPollingBot {
-    //private final String storagePath = "/home/ziphiro/myBotStorage/";
     @Value("${bot-token}")
     private String botToken;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy:HH.mm.ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(StrV.DATE_FORMAT);
     @Autowired
     private UserService userService;
     @Autowired
@@ -46,14 +45,11 @@ public class TBot extends TelegramLongPollingBot {
     @Async
     public void onUpdateReceived(Update update) {
         String userName = update.getMessage().getFrom().getUserName();
-            Path userDirPath = Path.of(StrV.STORAGE_DIR + userName);
-            long chatId = update.getMessage().getChatId();
+        long chatId = update.getMessage().getChatId();
         if (update.hasMessage() && update.getMessage().hasText()){
-
             String messageText = update.getMessage().getText();
-
             switch (messageText){
-                case "/start" -> startCommandReceived(chatId, userName);
+                case StrV.START -> startCommandReceived(chatId, userName);
                 //case "/register" -> ;
                 case "/storage" -> sendMessage(chatId, "you can use your browser version of storage if follow " +
                         "this link: http://localhost:8080");
