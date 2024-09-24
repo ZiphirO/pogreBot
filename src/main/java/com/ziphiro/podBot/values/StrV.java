@@ -17,4 +17,5 @@ public class StrV {
     public static final String ENJOY = "enjoy pogreb_OK service dude ";
     public static final String START = "/start";
     public static final String DATE_FORMAT = "dd.MM.yy:HH.mm.ss";
+    public static final String BOT_NAME = "podBot";
 }

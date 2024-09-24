@@ -93,7 +93,7 @@ public class TBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "podBot";
+        return StrV.BOT_NAME;
     }
     public TBot(DefaultBotOptions options, String botToken){
         super(options, botToken);
