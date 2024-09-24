@@ -138,12 +138,12 @@ public class TBot extends TelegramLongPollingBot {
         JSONObject path = jsonObject.getJSONObject("result");
         String file_path = path.getString("file_path");
 
-        URL downoload = new URL("https://api.telegram.org/file/bot" + botToken
+        URL download = new URL("https://api.telegram.org/file/bot" + botToken
                 + StrV.SLASH + file_path);
         FileOutputStream fos = new FileOutputStream(StrV.STORAGE_DIR + userName
                 + StrV.SLASH + fileName);
         System.out.println(userName + StrV.START_UPLOAD);
-        ReadableByteChannel rbc = Channels.newChannel(downoload.openStream());
+        ReadableByteChannel rbc = Channels.newChannel(download.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
